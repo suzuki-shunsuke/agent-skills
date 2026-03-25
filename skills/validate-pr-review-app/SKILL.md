@@ -13,7 +13,7 @@ description: |
 - [Config](references/config.md)
 - [Secrets](references/secret.md)
 - [How To Avoid 2 Approvals](references/how-to-avoid-2-approvals.md)
-- [Why are 2 approvals required for a pull request?](why-2-approvals-required.md)
+- [Why are 2 approvals required for a pull request?](references/why-2-approvals-required.md)
 
 ## What's validate-pr-review-app?
 
