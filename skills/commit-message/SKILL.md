@@ -1,6 +1,6 @@
 ---
-name: Commit Message
-description: How to write commit messages.
+name: commit-message
+description: Writes commit messages following Conventional Commits in English. Use when the user asks to write, format, or improve a commit message.
 ---
 
 - Write commit messages in English

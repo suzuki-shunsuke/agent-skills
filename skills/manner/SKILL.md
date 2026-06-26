@@ -1,6 +1,6 @@
 ---
 name: manner
-description: The basic manner
+description: Baseline rules for this repository — use English, never commit to default branches, never rewrite commit history. Use at the start of any coding or git task.
 ---
 
 - Use English

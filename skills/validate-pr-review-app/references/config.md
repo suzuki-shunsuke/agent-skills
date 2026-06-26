@@ -1,5 +1,11 @@
 # Configuration
 
+## Contents
+
+- JSON Schema (and validating config with it)
+- Example config
+- Trustness (trust levels and priority)
+- Allow Unsigned Commits
 - [Customize footer](customize-footer.md)
 
 ## JSON Schema

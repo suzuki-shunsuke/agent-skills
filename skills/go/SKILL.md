@@ -1,6 +1,6 @@
 ---
 name: go
-description: How to develop Go projects.
+description: Conventions and commands for Go projects — testing, linting, JSON Schema generation, and error handling. Use when developing, testing, or linting Go code in this repository.
 ---
 
 Test:
@@ -44,4 +44,4 @@ go run ./cmd/gen-jsonschema
 
 ## Error Handling
 
-Use slog and [slog-error](github.com/suzuki-shunsuke/slog-error).
+Use slog and [slog-error](https://github.com/suzuki-shunsuke/slog-error).
