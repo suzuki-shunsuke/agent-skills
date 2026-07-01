@@ -52,3 +52,10 @@ skills/ # 9 skills
    2. Discuss the granularity of the skills with the user and confirm before proceeding.
 3. Move the documentation other than README.md into `skills/*/*.md`, and fix the links from README.md.
 4. Create `skills/*/SKILL.md`, and have it refer to `*.md` for the details.
+
+## Gotchas
+
+- Referencing another file (such as a script) from a `skills/*/*.md` file by walking up the tree (for example `../..`) breaks the reference once the skill is installed. Handle it in this order:
+  1. If the file is referenced only from the skill, move it into the skill directory so the skill is self-contained.
+  2. If it cannot be embedded, replace the reference with a URL.
+  3. If neither works, consult the user.
