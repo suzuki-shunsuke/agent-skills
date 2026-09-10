@@ -13,6 +13,14 @@ umask 077
 kms_key_id="$1"
 private_key="$2"
 
+# aws kms get-parameters-for-import rejects aliases with InvalidArnException,
+# so resolve an alias to the key ARN first.
+case "$kms_key_id" in
+alias/*)
+  kms_key_id="$(aws kms describe-key --key-id "$kms_key_id" --query "KeyMetadata.Arn" --output text)"
+  ;;
+esac
+
 # Temporary directory holding intermediate files, including the plaintext private key.
 # Always removed, whether or not this script succeeds.
 kms_import_dir="$(mktemp -d)"
