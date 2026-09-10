@@ -69,8 +69,9 @@ resource "aws_kms_external_key" "github_app_<<GITHUB_APP>>" {
 }
 
 resource "aws_kms_alias" "github_app_<<GITHUB_APP>>" {
-  name          = "alias/<<KMS_ALIAS>>"
-  target_key_id = aws_kms_external_key.github_app_<<GITHUB_APP>>.key_id
+  name = "alias/<<KMS_ALIAS>>"
+  # Unlike aws_kms_key, aws_kms_external_key exports no key_id. Its id is the key ID.
+  target_key_id = aws_kms_external_key.github_app_<<GITHUB_APP>>.id
 }
 ```
 
@@ -198,6 +199,10 @@ aws kms describe-key \
 ```
 
 Confirm that `Origin` is `EXTERNAL` and `KeyState` is `PendingImport`.
+
+`describe-key` accepts an alias, but `get-parameters-for-import` in the next step doesn't.
+`scripts/import.sh` resolves an alias to the key ARN before calling it, so an alias is fine here.
+When calling the AWS CLI by hand, pass the key ID or ARN, not the alias.
 
 Download the private key from GitHub and run [scripts/import.sh](../scripts/import.sh) from the skill directory.
 The script writes the converted plaintext private key to a temporary directory, but deletes it on exit whether or not it succeeds.
