@@ -69,8 +69,7 @@ resource "aws_kms_external_key" "github_app_<<GITHUB_APP>>" {
 }
 
 resource "aws_kms_alias" "github_app_<<GITHUB_APP>>" {
-  name = "alias/<<KMS_ALIAS>>"
-  # Unlike aws_kms_key, aws_kms_external_key exports no key_id. Its id is the key ID.
+  name          = "alias/<<KMS_ALIAS>>"
   target_key_id = aws_kms_external_key.github_app_<<GITHUB_APP>>.id
 }
 ```
