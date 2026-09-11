@@ -228,8 +228,8 @@ None of them are sensitive.
 Confirm the variable names with the user and adjust them as needed.
 
 - `ROLE_TO_ASSUME`: ARN of the IAM role created in step 2 for signing with the KMS key
-- `APP_ID`: the GitHub App's App ID. Note that this is **not the Client ID**
-- `KMS_KEY_ID`: ID / ARN / alias of the KMS key created in step 1
+- `APP_CLIENT_ID`: the GitHub App's Client ID. Register the App ID as `APP_ID` instead when the workflows already pass one; the action takes either
+- `KMS_KEY_ID`: ID / ARN / alias of the KMS key created in step 1. The key ARN carries its region, so registering the ARN saves the workflow from having to state one
 
 When workflows in several repositories use this, organization variables avoid having to register them per repository.
 
