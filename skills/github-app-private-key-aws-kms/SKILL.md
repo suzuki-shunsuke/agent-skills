@@ -66,7 +66,7 @@ Before:
 After:
 
 ```yaml
-- uses: suzuki-shunsuke/create-github-app-token-aws-kms@c4b659c57b5e2319d887706fe3f6ff0f7ee9afbc # v0.0.1
+- uses: suzuki-shunsuke/create-github-app-token-aws-kms@91a3afd26b06729357ac310a02b658f0e3910ba9 # v0.0.2
   id: app-token
   with:
     client-id: ${{ vars.APP_CLIENT_ID }}
@@ -90,7 +90,7 @@ After:
 ### The region
 
 `aws-region` can be dropped when `kms-key-id` is a key ARN, which carries its own region, or when `AWS_REGION` is already set for the job.
-Otherwise set it, or the action fails because the AWS SDK can't tell where the key is.
+Otherwise set it, or the action fails because nothing says where the key is.
 
 ## 3. Pin the action
 
@@ -112,7 +112,8 @@ The AWS session the action creates stays inside the action and is never exported
 `aws-actions/configure-aws-credentials` gives that up: it exports the credentials as environment variables, or writes them to `~/.aws/credentials` when `aws-profile` is set, where every later step can read them.
 
 Reach for it only when you need an option this action doesn't offer, such as an external ID, a session policy, or a custom STS endpoint.
-Leave `role-to-assume` unset in that case, and the action falls back to the standard AWS credential chain.
+Leave `role-to-assume` unset in that case, and the action reads the credentials from `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` and `AWS_SESSION_TOKEN`, which is what `aws-actions/configure-aws-credentials` exports.
+Those environment variables are the only other source, so leave `aws-profile` unset: a `~/.aws/credentials` profile isn't read, and neither is IMDS on a self-hosted EC2 runner nor the credentials of an ECS or EKS task.
 
 ### The session is 900 seconds and doesn't need sizing
 
