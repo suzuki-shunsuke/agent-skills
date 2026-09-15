@@ -129,8 +129,8 @@ Prevention can fail, so make failures visible.
 ## References
 
 - [Organization setup](references/organization_setup.md) — read when configuring the organization,
-  or checking whether it is configured: the two Organization Rulesets on `auto-approve`, and the
-  shared action / reusable workflow repository.
+  or checking whether it is configured: the two Organization Rulesets on `auto-approve`, the shared
+  action / reusable workflow repository, and a complete approving workflow to copy from.
 - [OIDC `sub` claim](references/oidc_sub_claim.md) — read when customizing the `sub` claim, or when
   `AssumeRoleWithWebIdentity` fails: `job_workflow_ref`, per-repository opt in, immutable subject
   claims, and how to migrate without breaking existing OIDC users.

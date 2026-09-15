@@ -127,6 +127,9 @@ CODEOWNERS
       ...
 ```
 
+For what goes in `auto_approve.yaml`, see
+[The approving workflow](organization_setup.md#the-approving-workflow).
+
 Example:
 
 - https://github.com/szksh-lab-2/poc-enterprise-secure-auto-approve/tree/auto-approve
