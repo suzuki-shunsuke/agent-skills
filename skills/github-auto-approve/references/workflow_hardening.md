@@ -50,4 +50,4 @@ called from the reusable workflow, with unit tests.
 Approve through the API with an explicit `commit_id` rather than `gh pr review -a`. Combined with
 the base branch's `Dismiss stale pull request approvals when new commits are pushed` and
 `Require approval of the most recent reviewable push`, this is what stops a commit pushed after the
-approval from riding along — see `repository_setup.md`.
+approval from riding along — see [Enabling auto approve on a repository](repository_setup.md).

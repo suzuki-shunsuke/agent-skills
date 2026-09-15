@@ -1,31 +1,49 @@
 ---
 name: github-auto-approve
-description: Sets up and audits secure auto approve for pull requests across a GitHub organization, so the mechanism cannot be abused to merge unreviewed code. Covers the dedicated machine user and its CODEOWNERS paths, the fine-grained PAT held in AWS Secrets Manager and reachable only through OIDC pinned on the job_workflow_ref sub claim, the protected auto-approve branch, and the branch rulesets that make an approval mean something. Use when building auto approve, when reviewing an existing auto approve setup for holes, or when a workflow fails to assume the approve IAM role.
+description: Sets up and audits secure auto approve for pull requests across a GitHub organization, so that only pull requests genuinely meeting the intended conditions get approved, and the mechanism cannot be turned into a way to merge anything else. Covers the dedicated machine user and its CODEOWNERS paths, the fine-grained PAT held in AWS Secrets Manager and reachable only through OIDC pinned on the job_workflow_ref sub claim, the protected auto-approve branch, and the branch rulesets that make an approval mean something. Use when building auto approve, when reviewing an existing auto approve setup for holes, or when a workflow fails to assume the approve IAM role.
 ---
 
 # Secure auto approve on GitHub
 
-Source (Japanese):
-https://github.com/szksh-lab-2/poc-enterprise-secure-auto-approve
-
 ## Scope
 
-- A standardized scheme applied across an organization of 100+ repositories. OSS and personal
-  projects are out of scope — the effort only pays off at that scale.
+- A standardized scheme, governed centrally and applied uniformly across an organization's
+  repositories rather than configured per repository. It earns its cost once auto approve is
+  spreading to enough repositories that reviewing each one's configuration by hand is no longer
+  realistic. OSS and personal projects are out of scope.
 - Forks are not used. Allowing forks in an enterprise risks source code leaking and should be
   avoided regardless.
-- *When* it is acceptable to auto approve is out of scope. This is about making sure that only the
-  intended logic can trigger an approval.
+- Which conditions justify auto approving is out of scope. This is about guaranteeing that the
+  condition you chose is the one that actually decides.
 - AWS Secrets Manager holds the PAT. Google Cloud or another secret store works the same way.
 
-## What goes wrong without this
+## What is being protected
 
-Three patterns let a malicious insider, or a supply chain attack, merge a pull request nobody read:
+Auto approve skips human review for pull requests that meet conditions under which skipping it is
+acceptable — a dependency bump limited to an action SHA and its version comment, say, or a change
+confined to a data-only directory.
 
-1. Any pull request can be merged with no approval at all.
-2. Any bot's approval is enough to merge.
+So an auto approved pull request is, by design, not reviewed by a person. What makes that acceptable
+is the condition, and nothing else. The property to protect is therefore narrow and worth stating
+exactly:
+
+> A pull request is approved only when it genuinely satisfies the intended condition.
+
+Everything in this skill exists to keep that true — to stop the mechanism being turned into a way to
+merge a pull request that does not satisfy it. Deciding which conditions are acceptable in the first
+place is a separate question, and out of scope here.
+
+## How it gets bypassed
+
+Three patterns hand a malicious insider, or a supply chain attack, a way to merge a pull request
+that never met the condition:
+
+1. Any pull request can be merged with no approval at all — the condition never has to be evaluated.
+2. Any bot's approval is enough to merge — a different bot, judging by different rules, can approve
+   in place of the intended one.
 3. The PAT of the machine user that is a codeowner can be read out of an Organization Secret by
-   anyone who can add a workflow.
+   anyone who can add a workflow — the approval can then be issued directly, with no condition
+   evaluated at all.
 
 ## The security model
 
@@ -35,7 +53,7 @@ Three patterns let a malicious insider, or a supply chain attack, merge a pull r
 - Its PAT lives in AWS Secrets Manager, and only workflows allowed by OIDC can read it. The `sub`
   claim is customized so that one claim pins the repository and the workflow together. Setting the
   organization template is not enough — each repository has to opt in.
-- Reusable logic (fetching the PAT, approving, common approval checks) lives in a dedicated
+- Reusable logic (fetching the PAT, approving, evaluating common conditions) lives in a dedicated
   repository as actions and reusable workflows.
 - The approving reusable workflow of each repository lives on a dedicated `auto-approve` branch of
   that repository, protected by an Organization Ruleset that requires a security team review.
@@ -44,26 +62,23 @@ Three patterns let a malicious insider, or a supply chain attack, merge a pull r
 
 Once per organization:
 
-1. Create the two Organization Rulesets that protect the `auto-approve` branch →
-   `references/organization_setup.md`
-2. Customize the organization's OIDC `sub` claim template →
-   `references/oidc_sub_claim.md`
-3. Build the shared actions and reusable workflows in a dedicated repository →
-   `references/organization_setup.md`
+1. [Create the two Organization Rulesets that protect the `auto-approve` branch](references/organization_setup.md)
+2. [Customize the organization's OIDC `sub` claim template](references/oidc_sub_claim.md)
+3. [Build the shared actions and reusable workflows in a dedicated repository](references/organization_setup.md)
 
 Once per machine user:
 
-4. Create the machine user, the IAM role, the Secrets Manager secret and its resource policy, and
-   store a fine-grained PAT in it → `references/aws_secret.md`
+4. [Create the machine user, the IAM role, the Secrets Manager secret and its resource policy, and
+   store a fine-grained PAT in it](references/machine_user_and_pat.md)
 
 Per repository:
 
-5. Opt in to the `sub` claim template, protect the base branch, give the machine user push access
+5. [Opt in to the `sub` claim template, protect the base branch, give the machine user push access
    and add it to CODEOWNERS, create the `auto-approve` branch and its reusable workflow, then call
-   that workflow → `references/repository_setup.md`
+   that workflow](references/repository_setup.md)
 
-When writing or reviewing the approving workflow and its actions →
-`references/workflow_hardening.md`
+When writing or reviewing the approving workflow and its actions, read
+[Hardening the approving workflow](references/workflow_hardening.md).
 
 ## Rules
 
@@ -91,7 +106,7 @@ matter what else is in place.
   contain nothing but CODEOWNERS.
 - `include_claim_keys` replaces the whole `sub`; it does not append to it. Customizing it changes
   `sub` for **every** workflow in the repository at once and will break other workflows already
-  assuming roles by OIDC. Inventory them first — `references/oidc_sub_claim.md`.
+  assuming roles by OIDC. Inventory them first — [OIDC `sub` claim](references/oidc_sub_claim.md).
 - Setting the organization's `sub` template applies to nothing on its own. Each repository has to
   opt in with `use_default: false`.
 - CODEOWNERS is read from the base branch, so the CODEOWNERS governing the `auto-approve` branch has
@@ -110,21 +125,17 @@ Prevention can fail, so make failures visible.
 
 ## References
 
-- `references/organization_setup.md` — read when configuring the organization, or checking whether
-  it is configured: the two Organization Rulesets on `auto-approve`, and the shared action /
-  reusable workflow repository.
-- `references/oidc_sub_claim.md` — read when customizing the `sub` claim, or when
+- [Organization setup](references/organization_setup.md) — read when configuring the organization,
+  or checking whether it is configured: the two Organization Rulesets on `auto-approve`, the shared
+  action / reusable workflow repository, and a complete approving workflow to copy from.
+- [OIDC `sub` claim](references/oidc_sub_claim.md) — read when customizing the `sub` claim, or when
   `AssumeRoleWithWebIdentity` fails: `job_workflow_ref`, per-repository opt in, immutable subject
   claims, and how to migrate without breaking existing OIDC users.
-- `references/aws_secret.md` — read when creating or reviewing the machine user, the IAM role, the
-  secret, or the PAT, and when asked why GitHub Secrets is not used. Terraform example code is in
-  `references/terraform/`.
-- `references/repository_setup.md` — read when enabling auto approve on a repository: base branch
-  ruleset, CODEOWNERS path selection, the `auto-approve` branch, and the caller job.
-- `references/workflow_hardening.md` — read when writing or reviewing the approving reusable
-  workflow or its actions.
-
-## Further reading
-
-- https://zenn.dev/shunsuke_suzuki/articles/secure-github-actions-by-job-workflow-ref
-- https://zenn.dev/shunsuke_suzuki/scraps/1d711e9708e6cc
+- [Machine user, IAM role, and the PAT](references/machine_user_and_pat.md) — read when creating or reviewing
+  any of those, and when asked why GitHub Secrets is not used instead. Terraform example code sits
+  in [`references/terraform/`](references/terraform).
+- [Enabling auto approve on a repository](references/repository_setup.md) — read when switching a
+  repository on: base branch ruleset, CODEOWNERS path selection, the `auto-approve` branch, and the
+  caller job.
+- [Hardening the approving workflow](references/workflow_hardening.md) — read when writing or
+  reviewing that workflow or its actions.

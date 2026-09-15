@@ -3,7 +3,7 @@
 Read this when creating or reviewing the machine user, the IAM role, the Secrets Manager secret, or
 the PAT — and when asked why GitHub Secrets is not used instead.
 
-Terraform example code: `terraform/` next to this file (`locals.tf`, `iam.tf`,
+Terraform example code: [`terraform/`](terraform) next to this file (`locals.tf`, `iam.tf`,
 `secretsmanager.tf`). The comments in it explain each condition.
 
 ## The machine user
@@ -36,7 +36,7 @@ someone add a rogue workflow to a repository that has no `auto-approve` branch a
 from there. Requiring a review to add a repository to the list is the control that prevents this.
 
 The `sub` has the form
-`repo:<A>:job_workflow_ref:<B>/.github/workflows/auto_approve.yaml@refs/heads/auto-approve`.
+`repo:<A>:pull_request:job_workflow_ref:<B>/.github/workflows/auto_approve.yaml@refs/heads/auto-approve`.
 If both A and B are wildcards, combinations where A and B differ also match — repository A gets its
 pull requests approved by repository B's logic. The organization then effectively runs on its
 loosest repository's standard. Always pair the repository with its own workflow.
@@ -46,7 +46,7 @@ wildcard, so restrict it by prefix (`auto_approve_*.yaml`) and keep the reposito
 The caller's branch does not have to be restricted there: the shared workflow fetches the pull
 request and decides for itself whether it may be approved, so a caller can only choose which pull
 request is evaluated. That holds only as long as the shared workflow never interpolates its inputs
-into a `run` block — see `workflow_hardening.md`.
+into a `run` block — see [Hardening the approving workflow](workflow_hardening.md).
 
 ### Generating the list from a data source
 
@@ -57,7 +57,7 @@ apply, which removes the review step.
 Where immutable subject claims are enabled, the repository half of the `sub` contains numeric owner
 and repository IDs, so repository names alone are not enough — the data source has to supply the
 IDs. Whether immutable claims are on can differ per repository, so confirm the `sub` that is
-actually issued before building the values. See `oidc_sub_claim.md`.
+actually issued before building the values. See [OIDC `sub` claim](oidc_sub_claim.md).
 
 ## The fine-grained PAT
 

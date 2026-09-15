@@ -19,7 +19,7 @@ gh api -X PUT "/repos/$ORG/$REPO/actions/oidc/customization/sub" \
 ```
 
 This changes `sub` for every workflow in the repository, not just the approving one. Inventory the
-repository's other OIDC users first — see `oidc_sub_claim.md`.
+repository's other OIDC users first — see [OIDC `sub` claim](oidc_sub_claim.md).
 
 ## 2. Protect the base branch
 
@@ -87,7 +87,7 @@ requested and this scheme works there.
 ## 4. Create the `auto-approve` branch
 
 Only organization admins can do this, because of the Organization Ruleset that restricts branch
-creation — see `organization_setup.md`.
+creation — see [Organization setup](organization_setup.md).
 
 Needed only when the repository requires its own approval logic.
 
@@ -126,6 +126,9 @@ CODEOWNERS
       action.yaml
       ...
 ```
+
+For what goes in `auto_approve.yaml`, see
+[The approving workflow](organization_setup.md#the-approving-workflow).
 
 Example:
 
