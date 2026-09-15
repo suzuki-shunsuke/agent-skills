@@ -142,8 +142,3 @@ Prevention can fail, so make failures visible.
   caller job.
 - [Hardening the approving workflow](references/workflow_hardening.md) — read when writing or
   reviewing that workflow or its actions.
-
-## Further reading
-
-- https://zenn.dev/shunsuke_suzuki/articles/secure-github-actions-by-job-workflow-ref
-- https://zenn.dev/shunsuke_suzuki/scraps/1d711e9708e6cc
