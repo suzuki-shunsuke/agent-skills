@@ -1,6 +1,6 @@
 ---
 name: github-auto-approve
-description: Sets up and audits secure auto approve for pull requests across a GitHub organization, so the mechanism cannot be abused to merge unreviewed code. Covers the dedicated machine user and its CODEOWNERS paths, the fine-grained PAT held in AWS Secrets Manager and reachable only through OIDC pinned on the job_workflow_ref sub claim, the protected auto-approve branch, and the branch rulesets that make an approval mean something. Use when building auto approve, when reviewing an existing auto approve setup for holes, or when a workflow fails to assume the approve IAM role.
+description: Sets up and audits secure auto approve for pull requests across a GitHub organization, so that only pull requests genuinely meeting the intended conditions get approved, and the mechanism cannot be turned into a way to merge anything else. Covers the dedicated machine user and its CODEOWNERS paths, the fine-grained PAT held in AWS Secrets Manager and reachable only through OIDC pinned on the job_workflow_ref sub claim, the protected auto-approve branch, and the branch rulesets that make an approval mean something. Use when building auto approve, when reviewing an existing auto approve setup for holes, or when a workflow fails to assume the approve IAM role.
 ---
 
 # Secure auto approve on GitHub
@@ -16,18 +16,37 @@ https://github.com/szksh-lab-2/poc-enterprise-secure-auto-approve
   realistic. OSS and personal projects are out of scope.
 - Forks are not used. Allowing forks in an enterprise risks source code leaking and should be
   avoided regardless.
-- *When* it is acceptable to auto approve is out of scope. This is about making sure that only the
-  intended logic can trigger an approval.
+- Which conditions justify auto approving is out of scope. This is about guaranteeing that the
+  condition you chose is the one that actually decides.
 - AWS Secrets Manager holds the PAT. Google Cloud or another secret store works the same way.
 
-## What goes wrong without this
+## What is being protected
 
-Three patterns let a malicious insider, or a supply chain attack, merge a pull request nobody read:
+Auto approve skips human review for pull requests that meet conditions under which skipping it is
+acceptable — a dependency bump limited to an action SHA and its version comment, say, or a change
+confined to a data-only directory.
 
-1. Any pull request can be merged with no approval at all.
-2. Any bot's approval is enough to merge.
+So an auto approved pull request is, by design, not reviewed by a person. What makes that acceptable
+is the condition, and nothing else. The property to protect is therefore narrow and worth stating
+exactly:
+
+> A pull request is approved only when it genuinely satisfies the intended condition.
+
+Everything in this skill exists to keep that true — to stop the mechanism being turned into a way to
+merge a pull request that does not satisfy it. Deciding which conditions are acceptable in the first
+place is a separate question, and out of scope here.
+
+## How it gets bypassed
+
+Three patterns hand a malicious insider, or a supply chain attack, a way to merge a pull request
+that never met the condition:
+
+1. Any pull request can be merged with no approval at all — the condition never has to be evaluated.
+2. Any bot's approval is enough to merge — a different bot, judging by different rules, can approve
+   in place of the intended one.
 3. The PAT of the machine user that is a codeowner can be read out of an Organization Secret by
-   anyone who can add a workflow.
+   anyone who can add a workflow — the approval can then be issued directly, with no condition
+   evaluated at all.
 
 ## The security model
 
@@ -37,7 +56,7 @@ Three patterns let a malicious insider, or a supply chain attack, merge a pull r
 - Its PAT lives in AWS Secrets Manager, and only workflows allowed by OIDC can read it. The `sub`
   claim is customized so that one claim pins the repository and the workflow together. Setting the
   organization template is not enough — each repository has to opt in.
-- Reusable logic (fetching the PAT, approving, common approval checks) lives in a dedicated
+- Reusable logic (fetching the PAT, approving, evaluating common conditions) lives in a dedicated
   repository as actions and reusable workflows.
 - The approving reusable workflow of each repository lives on a dedicated `auto-approve` branch of
   that repository, protected by an Organization Ruleset that requires a security team review.
