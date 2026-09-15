@@ -51,8 +51,9 @@ admins must not be allowed to bypass ruleset 1 itself.
 ### The required status check
 
 Require exactly one fixed job. To require several jobs, collapse them into one status check job
-first — see the `github-required-status-check` skill, or
-https://zenn.dev/shunsuke_suzuki/articles/how-to-manage-github-actions-required-status-check
+first — use the
+[github-required-status-check](https://github.com/suzuki-shunsuke/agent-skills/tree/main/skills/github-required-status-check)
+skill.
 
 ## The shared action and reusable workflow repository
 
