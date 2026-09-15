@@ -65,26 +65,23 @@ that never met the condition:
 
 Once per organization:
 
-1. Create the two Organization Rulesets that protect the `auto-approve` branch →
-   `references/organization_setup.md`
-2. Customize the organization's OIDC `sub` claim template →
-   `references/oidc_sub_claim.md`
-3. Build the shared actions and reusable workflows in a dedicated repository →
-   `references/organization_setup.md`
+1. [Create the two Organization Rulesets that protect the `auto-approve` branch](references/organization_setup.md)
+2. [Customize the organization's OIDC `sub` claim template](references/oidc_sub_claim.md)
+3. [Build the shared actions and reusable workflows in a dedicated repository](references/organization_setup.md)
 
 Once per machine user:
 
-4. Create the machine user, the IAM role, the Secrets Manager secret and its resource policy, and
-   store a fine-grained PAT in it → `references/aws_secret.md`
+4. [Create the machine user, the IAM role, the Secrets Manager secret and its resource policy, and
+   store a fine-grained PAT in it](references/aws_secret.md)
 
 Per repository:
 
-5. Opt in to the `sub` claim template, protect the base branch, give the machine user push access
+5. [Opt in to the `sub` claim template, protect the base branch, give the machine user push access
    and add it to CODEOWNERS, create the `auto-approve` branch and its reusable workflow, then call
-   that workflow → `references/repository_setup.md`
+   that workflow](references/repository_setup.md)
 
-When writing or reviewing the approving workflow and its actions →
-`references/workflow_hardening.md`
+When writing or reviewing the approving workflow and its actions, read
+[Hardening the approving workflow](references/workflow_hardening.md).
 
 ## Rules
 
@@ -112,7 +109,7 @@ matter what else is in place.
   contain nothing but CODEOWNERS.
 - `include_claim_keys` replaces the whole `sub`; it does not append to it. Customizing it changes
   `sub` for **every** workflow in the repository at once and will break other workflows already
-  assuming roles by OIDC. Inventory them first — `references/oidc_sub_claim.md`.
+  assuming roles by OIDC. Inventory them first — [OIDC `sub` claim](references/oidc_sub_claim.md).
 - Setting the organization's `sub` template applies to nothing on its own. Each repository has to
   opt in with `use_default: false`.
 - CODEOWNERS is read from the base branch, so the CODEOWNERS governing the `auto-approve` branch has
@@ -131,19 +128,20 @@ Prevention can fail, so make failures visible.
 
 ## References
 
-- `references/organization_setup.md` — read when configuring the organization, or checking whether
-  it is configured: the two Organization Rulesets on `auto-approve`, and the shared action /
-  reusable workflow repository.
-- `references/oidc_sub_claim.md` — read when customizing the `sub` claim, or when
+- [Organization setup](references/organization_setup.md) — read when configuring the organization,
+  or checking whether it is configured: the two Organization Rulesets on `auto-approve`, and the
+  shared action / reusable workflow repository.
+- [OIDC `sub` claim](references/oidc_sub_claim.md) — read when customizing the `sub` claim, or when
   `AssumeRoleWithWebIdentity` fails: `job_workflow_ref`, per-repository opt in, immutable subject
   claims, and how to migrate without breaking existing OIDC users.
-- `references/aws_secret.md` — read when creating or reviewing the machine user, the IAM role, the
-  secret, or the PAT, and when asked why GitHub Secrets is not used. Terraform example code is in
-  `references/terraform/`.
-- `references/repository_setup.md` — read when enabling auto approve on a repository: base branch
-  ruleset, CODEOWNERS path selection, the `auto-approve` branch, and the caller job.
-- `references/workflow_hardening.md` — read when writing or reviewing the approving reusable
-  workflow or its actions.
+- [Machine user, IAM role, and the PAT](references/aws_secret.md) — read when creating or reviewing
+  any of those, and when asked why GitHub Secrets is not used instead. Terraform example code sits
+  in [`references/terraform/`](references/terraform).
+- [Enabling auto approve on a repository](references/repository_setup.md) — read when switching a
+  repository on: base branch ruleset, CODEOWNERS path selection, the `auto-approve` branch, and the
+  caller job.
+- [Hardening the approving workflow](references/workflow_hardening.md) — read when writing or
+  reviewing that workflow or its actions.
 
 ## Further reading
 
