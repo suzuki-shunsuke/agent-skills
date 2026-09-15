@@ -72,7 +72,7 @@ Once per organization:
 Once per machine user:
 
 4. [Create the machine user, the IAM role, the Secrets Manager secret and its resource policy, and
-   store a fine-grained PAT in it](references/aws_secret.md)
+   store a fine-grained PAT in it](references/machine_user_and_pat.md)
 
 Per repository:
 
@@ -134,7 +134,7 @@ Prevention can fail, so make failures visible.
 - [OIDC `sub` claim](references/oidc_sub_claim.md) — read when customizing the `sub` claim, or when
   `AssumeRoleWithWebIdentity` fails: `job_workflow_ref`, per-repository opt in, immutable subject
   claims, and how to migrate without breaking existing OIDC users.
-- [Machine user, IAM role, and the PAT](references/aws_secret.md) — read when creating or reviewing
+- [Machine user, IAM role, and the PAT](references/machine_user_and_pat.md) — read when creating or reviewing
   any of those, and when asked why GitHub Secrets is not used instead. Terraform example code sits
   in [`references/terraform/`](references/terraform).
 - [Enabling auto approve on a repository](references/repository_setup.md) — read when switching a

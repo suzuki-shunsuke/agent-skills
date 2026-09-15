@@ -36,7 +36,7 @@ someone add a rogue workflow to a repository that has no `auto-approve` branch a
 from there. Requiring a review to add a repository to the list is the control that prevents this.
 
 The `sub` has the form
-`repo:<A>:job_workflow_ref:<B>/.github/workflows/auto_approve.yaml@refs/heads/auto-approve`.
+`repo:<A>:pull_request:job_workflow_ref:<B>/.github/workflows/auto_approve.yaml@refs/heads/auto-approve`.
 If both A and B are wildcards, combinations where A and B differ also match — repository A gets its
 pull requests approved by repository B's logic. The organization then effectively runs on its
 loosest repository's standard. Always pair the repository with its own workflow.

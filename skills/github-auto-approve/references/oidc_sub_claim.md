@@ -21,10 +21,25 @@ By default `sub` is `repo:<owner>/<repo>:ref:refs/heads/<branch>` and contains n
 ```sh
 gh api -X PUT "/orgs/$ORG/actions/oidc/customization/sub" \
   -f 'include_claim_keys[]=repo' \
+  -f 'include_claim_keys[]=context' \
   -f 'include_claim_keys[]=job_workflow_ref'
 ```
 
-`sub` then becomes `repo:<owner>/<repo>:job_workflow_ref:<job_workflow_ref>`.
+`sub` then becomes `repo:<owner>/<repo>:<context>:job_workflow_ref:<job_workflow_ref>`, and for the
+`pull_request` event that auto approve runs on:
+
+```
+repo:<owner>/<repo>:pull_request:job_workflow_ref:<owner>/<repo>/.github/workflows/auto_approve.yaml@refs/heads/auto-approve
+```
+
+Include `context`, even though `job_workflow_ref` alone would restrict the workflow. It does two
+things:
+
+- It keeps the default `sub` as a prefix, so conditions that other workflows in the repository
+  already rely on survive the change. Dropping `context` breaks all of them at once — see
+  [Customizing `sub` is a breaking change](#customizing-sub-is-a-breaking-change).
+- It pins the token to the event, so the approve role can only be assumed from a `pull_request`
+  run.
 
 Specifying the repository and the workflow as two separate conditions would evaluate them as a cross
 product, allowing a repository to use a workflow it is not paired with. One combined claim pins the
@@ -63,10 +78,10 @@ Repositories created, renamed, or transferred on or after 2026-07-15 get immutab
 automatically. The repository part of `sub` then embeds the owner ID and the repository ID:
 
 ```
-repo:<owner>@<owner_id>/<repo>@<repo_id>:job_workflow_ref:<job_workflow_ref>
+repo:<owner>@<owner_id>/<repo>@<repo_id>:<context>:job_workflow_ref:<job_workflow_ref>
 ```
 
-e.g.
+e.g., with `context` omitted from the template to keep the line short:
 
 ```
 repo:szksh-lab-2@204274656/poc-enterprise-secure-auto-approve@1366980709:job_workflow_ref:szksh-lab-2/poc-enterprise-secure-auto-approve/.github/workflows/auto_approve.yaml@refs/heads/auto-approve

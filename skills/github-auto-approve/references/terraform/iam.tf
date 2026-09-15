@@ -39,11 +39,14 @@ data "aws_iam_policy_document" "github_auto_approve_assume_role" {
     }
 
     condition {
-      # The organization customizes the sub claim to include repo and
+      # The organization customizes the sub claim to include repo, context and
       # job_workflow_ref, so that both the caller repository and the workflow which
       # defines the job are restricted by a single condition. Two conditions would
       # be evaluated as the cross product of the repositories and the workflows,
       # which would allow a repository to use a workflow it isn't paired with.
+      # context is the pull_request segment below. It's included so that the
+      # default sub stays a prefix, which keeps the repository's other OIDC
+      # conditions working, and it restricts the role to pull_request runs.
       # StringLike, because the file name of a shared workflow is a wildcard.
       test     = "StringLike"
       variable = "token.actions.githubusercontent.com:sub"
@@ -52,7 +55,7 @@ data "aws_iam_policy_document" "github_auto_approve_assume_role" {
         # auto-approve branch.
         [
           for repo in local.auto_approve_repos :
-          "repo:${repo}:job_workflow_ref:${repo}/.github/workflows/auto_approve.yaml@refs/heads/${local.auto_approve_branch}"
+          "repo:${repo}:pull_request:job_workflow_ref:${repo}/.github/workflows/auto_approve.yaml@refs/heads/${local.auto_approve_branch}"
         ],
         # The job can also be defined by a reusable workflow which is shared by
         # multiple repositories.
@@ -65,7 +68,7 @@ data "aws_iam_policy_document" "github_auto_approve_assume_role" {
         # injection there would leak them.
         [
           for repo in local.auto_approve_repos :
-          "repo:${repo}:job_workflow_ref:${local.auto_approve_shared_workflow_ref}"
+          "repo:${repo}:pull_request:job_workflow_ref:${local.auto_approve_shared_workflow_ref}"
         ],
       )
     }
