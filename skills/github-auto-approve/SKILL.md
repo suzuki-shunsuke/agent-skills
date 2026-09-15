@@ -5,9 +5,6 @@ description: Sets up and audits secure auto approve for pull requests across a G
 
 # Secure auto approve on GitHub
 
-Source (Japanese):
-https://github.com/szksh-lab-2/poc-enterprise-secure-auto-approve
-
 ## Scope
 
 - A standardized scheme, governed centrally and applied uniformly across an organization's
