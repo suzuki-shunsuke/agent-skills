@@ -10,8 +10,10 @@ https://github.com/szksh-lab-2/poc-enterprise-secure-auto-approve
 
 ## Scope
 
-- A standardized scheme applied across an organization of 100+ repositories. OSS and personal
-  projects are out of scope — the effort only pays off at that scale.
+- A standardized scheme, governed centrally and applied uniformly across an organization's
+  repositories rather than configured per repository. It earns its cost once auto approve is
+  spreading to enough repositories that reviewing each one's configuration by hand is no longer
+  realistic. OSS and personal projects are out of scope.
 - Forks are not used. Allowing forks in an enterprise risks source code leaking and should be
   avoided regardless.
 - *When* it is acceptable to auto approve is out of scope. This is about making sure that only the
