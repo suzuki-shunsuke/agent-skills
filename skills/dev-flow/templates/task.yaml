@@ -1,0 +1,13 @@
+name: # task id
+description:
+type: implementation # implementation, investigation
+status: todo # backlog, todo, overview-design, detail-design, doing, in-review, pending, cancel, done
+tags: []
+claude_sessions: [] # - id: <session id>, description: <summary of the session and how it relates to the task>
+parent_task: ""
+sub_tasks: []
+derived_from: "" # for a task created from an investigation task's conclusion, the original investigation task's task id
+derived_tasks: [] # task ids of tasks created from this investigation task's conclusion
+repositories: []
+issues: []
+pull_requests: []
