@@ -107,8 +107,23 @@ pull_requests:
 1. Write Background / What / Why / Scope / Out of Scope
     - This stage confirms that the problem being solved and the direction are right before thinking about details
     - See "Writing the Overview" for how to write it
+1. If there are blocking Open Questions, ask the human before the agent review (see "Blocking Open Questions")
 1. Have an agent review it, and repeat until it converges (see "Review Rules")
 1. Get the human's approval of Background / What / Why / Scope / Out of Scope. This becomes the basis for every later decision
+
+#### Blocking Open Questions
+
+Split Open Questions into two kinds.
+
+- Blocking: questions whose answer changes the document under review. In step 1 that is the direction in What / Scope / Out of Scope (e.g. "automatic or an explicit setting?", "fall back or fail?"); in step 2 it is Behaviour
+- Non-blocking: everything else. In step 1, questions that only change Behaviour (edge cases, exact failure conditions, which command or message) are non-blocking: write them down for step 2 instead of deciding them in the overview
+
+Ask the human blocking questions as soon as they appear, regardless of how many there are, and do not enter or continue the agent review loop while any remain.
+Reviewing a document with undecided directions makes the reviewer and the writer work out the consequences of every branch, which bloats the document with "if A ... if B ..." and produces rework once the answer comes.
+
+1. Ask with the options and their trade-offs (use AskUserQuestion when available)
+1. Reflect the answers in the body, record the decisions and their reasons in details.md, and remove the answered questions from Open Questions
+1. If a review raises a new blocking question, stop the loop there and ask, then resume
 
 #### Writing the Overview
 
@@ -124,11 +139,19 @@ The overview lets a reader judge the problem and direction without reading code.
   - Actual Behaviour: the actual behaviour
   - This may be omitted for changes it does not fit, such as new features or improvements
 - Write Scope / Out of Scope / Open Questions in terms of behaviour as much as possible too
+- Verify claims about behaviour before writing them (see "Verify Before Writing")
+
+#### Verify Before Writing
+
+Before writing a claim about how code, a command, or a tool behaves (e.g. "X does not read tfvars", "Y fails on a syntax error", "Z runs in each directory"), confirm it yourself by reading the code or actually running the command, and record what you ran and its output in details.md.
+If you cannot verify it, say so in the document instead of stating it as fact.
+Unverified claims make the reviewer verify and correct them, which adds review rounds, and a wrong premise can lead the human to a wrong decision.
 
 ### 2. Settle the Specification (Human Approves)
 
 1. Design the details for implementation, and write the discussion in details.md
 1. Write the specification and behaviour the implementation must satisfy in Behaviour, and the implementation approach in Implementation Plan. Like the overview, write Behaviour in terms of behaviour as seen by users, and put function names and the like in Implementation Plan
+1. If there are blocking Open Questions, ask the human before the agent review (see "Blocking Open Questions")
 1. Have an agent review the specification and implementation approach together, and repeat until it converges
 1. Get the human's approval of Behaviour. Implementation Plan is not subject to approval
 
@@ -204,9 +227,11 @@ If the approved Questions / Scope cannot produce an answer, or the investigation
 - Have a subagent with a fresh context do the review, and pass it only the documents (the pull request, for pull request reviews). Passing the writer's context drags the reviewer toward the writer's conclusions
 - Have the reviewer report only comments that need fixing in light of the document's purpose and scope. Do not have it report matters of taste or nits
 - In reviews of the overview and Behaviour, also have it check that they follow "Writing the Overview" (premises are written, they are not written in terms of internal implementation)
+- In reviews of the overview, have the reviewer judge the direction, not the specification. Specification-level comments (edge cases, exact conditions, error handling details) go to step 2: record them in details.md and handle them when writing Behaviour, instead of growing What into a specification
 - Write out-of-scope comments in Follow-ups
 - Finish when no comments that need fixing remain. There is no upper limit on the number of rounds
 - If the same point goes back and forth, stop the loop and ask the human
+- If a comment's fix depends on an undecided blocking Open Question, do not write out every branch; stop the loop and ask the human (see "Blocking Open Questions")
 
 ## PR Explanation: Purpose and Contents
 
