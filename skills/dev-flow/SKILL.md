@@ -28,6 +28,16 @@ If a human judges it necessary and explicitly invokes the skill, start the flow 
 
 For each task, open a new pane in herdr, start Claude Code there, and proceed.
 
+### Local Supplements
+
+Organizations and projects may add their own rules to this flow (e.g. the language of documents, pull request conventions).
+Before starting, check for them and read them if they exist.
+
+- A skill named `dev-flow-local`
+- `.claude/dev-flow.md` in the repository
+
+Where a supplement conflicts with this skill, follow the supplement.
+
 ### When a Pull Request Already Exists
 
 Normally the flow starts before the pull request is created, but sometimes design and other steps were skipped and a pull request already exists.
@@ -317,3 +327,5 @@ Write the PR Explanation in Markdown in `tasks/<task id>/pr-explanation.md`. Ord
 - Limit snippets to the range needed for the explanation. Do not paste whole files or whole hunks
 - Use `diff` to show changes, and a code block in the relevant language to show new code or surrounding context
 - In the PR Explanation section of `<task id>.md`, write only the TL;DR and a link to `pr-explanation.md`; do not write the same content twice
+
+For pull requests whose diff is too long to read comfortably in Markdown, you may generate HTML with the code on the left and the explanation on the right. See references/pr-explanation-html.md for the steps.
