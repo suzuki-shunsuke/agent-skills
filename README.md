@@ -14,3 +14,4 @@ My Agent Skills.
 | [go](skills/go/SKILL.md) | Conventions and commands for Go projects: testing, linting, JSON Schema generation, error handling. |
 | [manner](skills/manner/SKILL.md) | Baseline rules: write in English, never commit to a default branch, never rewrite history. |
 | [pr](skills/pr/SKILL.md) | Creates a branch, commits, and opens a pull request whose description is written from the base...head diff. |
+| [pr-review](skills/pr-review/SKILL.md) | Turns a pull request by someone else into documents explaining its overview, specification, and code, plus verified agent review findings, so a human without its context can review it. |
